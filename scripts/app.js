@@ -1,3 +1,11 @@
+// TODO finish styling
+// TODO add paint storm
+// TODO add layout thrashing (parallax?)
+// TODO add blocking touchdown / touchmove (maybe refactor scroll)
+// TODO add long-running JS
+// TODO add more badly-timed JS (lazy load and injection of results)
+// TODO add big style recalc
+
 APP.Main = (function() {
 
   var stories = null;
