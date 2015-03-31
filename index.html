@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+  <meta name="theme-color" content="#288A76">
+
+  <script src="libs/handlebars-v3.0.0.js"></script>
+  <script id="tmpl-story" type="text/x-handlebars-template">
+    <h1 class="story__title">{{ title }}</h1>
+    <div class="story__score">{{ score }}</div>
+    <div class="story__by">Posted by {{ by }}</div>
+  </script>
+
+  <script id="tmpl-story-details" type="text/x-handlebars-template">
+    <button class="js-close">Close</button>
+    <h1>{{ title }}</h1>
+    <div>{{ by }}</div> (score: {{ score }})
+  </script>
+
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="styles/app.css">
+
+  </head>
+
+  <body>
+
+    <header>
+      Hacker News (Top Stories)
+    </header>
+
+    <main>
+    </main>
+
+    <footer>
+      Powered by the <a href="https://github.com/HackerNews/API">Hacker News API</a>
+    </footer>
+
+    <script src="scripts/namespace.js"></script>
+    <script src="scripts/data.js"></script>
+    <script src="scripts/app.js"></script>
+
+  </body>
+</html>

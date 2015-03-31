@@ -1,0 +1,122 @@
+/* I heard layers are fast. Am I overdoing it? */
+* {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  font-family: 'Roboto';
+  font-weight: 400;
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+  background: #ececec;
+}
+
+header {
+  height: 56px;
+  background: #FF8F00;
+  color: #FFF;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 56px;
+  padding: 0 0 0 72px;
+  z-index: 1;
+}
+
+header.raised {
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.16),
+      0px 2px 5px 0px rgba(0, 0, 0, 0.23);
+}
+
+.story {
+  border-top: 1px solid #EFEFEF;
+  border-bottom: 1px solid #EFEFEF;
+  padding: 16px 16px 16px 72px;
+  background: #FFF;
+  position: relative;
+  min-height: 90px;
+}
+
+.story:nth-last-child(-n+1) {
+  border-bottom: 0;
+}
+
+.story__title {
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(0,0,0,0.87);
+  margin: 0;
+  padding: 0;
+  line-height: 32px;
+}
+
+.story__by {
+  color: rgba(0,0,0,0.54);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.story__score {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #FFB300;
+  border-radius: 50%;
+  color: rgba(255,255,255,0.87);
+  font-weight: 500;
+  font-size: 13px;
+  left: 16px;
+  top: 16px;
+  text-align: center;
+  line-height: 40px;
+}
+
+.story-details {
+  will-change: transform;
+  transform: translateZ(0);
+  position: fixed;
+  top: 56px;
+  left: 100%;
+  width: 100%;
+  bottom: 40px;
+  background: white;
+}
+
+main {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+footer {
+  height: 40px;
+  background: #ececec;
+  color: #888;
+  text-align: center;
+  line-height: 40px;
+}
+
+footer a {
+  color: #666;
+  font-weight: 500;
+}
