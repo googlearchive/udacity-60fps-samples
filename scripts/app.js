@@ -11,13 +11,6 @@ APP.Main = (function() {
   var storyDetailsTemplate =
       Handlebars.compile($('#tmpl-story-details').textContent);
 
-  function createStoryListItem (id) {
-    var story = document.createElement('div');
-    story.setAttribute('id', 's-' + id);
-    story.classList.add('story');
-    main.appendChild(story);
-  }
-
   /**
    * As every single story arrives in shove its
    * content in at that exact moment. Feels like something
@@ -63,6 +56,7 @@ APP.Main = (function() {
     var left = null;
 
     function animate () {
+
       // Find out where it currently is.
       var storyDetailsPosition = storyDetails.getBoundingClientRect();
 
@@ -123,10 +117,23 @@ APP.Main = (function() {
   }
 
   main.addEventListener('scroll', function() {
-    if (main.scrollTop > 0)
-      $('header').classList.add('raised');
+
+    var header = $('header');
+    var headerTitles = header.querySelector('.header__title-wrapper');
+    var scrollTopCapped = Math.min(70, main.scrollTop);
+
+    header.style.height = (156 - scrollTopCapped) + 'px';
+    headerTitles.style.transform = 'scale(' +
+      (1 - (scrollTopCapped / 300)) + ')';
+
+    // Add a shadow...
+    if (main.scrollTop > 70)
+      header.classList.add('raised');
     else
-      $('header').classList.remove('raised');
+      header.classList.remove('raised');
+
+    // Add a 'subtle' parallax effect here...
+
   });
 
   // Bootstrap in the stories.
@@ -139,7 +146,16 @@ APP.Main = (function() {
         return;
 
       var key = String(stories[i]);
-      createStoryListItem(key);
+      var story = document.createElement('div');
+      story.setAttribute('id', 's-' + key);
+      story.classList.add('story');
+      story.innerHTML = storyTemplate({
+        title: '...',
+        score: '-',
+        by: '...'
+      });
+      main.appendChild(story);
+
       APP.Data.getStoryById(stories[i], onStoryData.bind(this, key));
     }
 
