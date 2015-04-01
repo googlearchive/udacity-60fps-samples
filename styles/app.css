@@ -1,9 +1,3 @@
-/* I heard layers are fast. Am I overdoing it? */
-* {
-  will-change: transform;
-  transform: translateZ(0);
-}
-
 * {
   box-sizing: border-box;
 }
@@ -63,30 +57,52 @@ body {
   margin: 0;
 }
 
-.header.raised {
+body.details-active .story__title,
+body.details-active .story__by,
+body.details-active .story__score {
+  transition: opacity 0.5s ease-out;
+  opacity: 0 !important;
+}
+
+body.details-active .story {
+  background: linear-gradient(to bottom, #FFF 0%, #FFF 100%);
+}
+
+body.raised .header {
   box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.16),
       0px 2px 5px 0px rgba(0, 0, 0, 0.23);
 }
 
 main {
-  padding-top: 100px;
-  margin-top: 56px;
+  padding-top: 156px;
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
+  z-index: 0;
 }
 
 .story {
-  border-top: 1px solid #EFEFEF;
-  border-bottom: 1px solid #EFEFEF;
   padding: 16px 16px 16px 72px;
   background: #FFF;
+  background: linear-gradient(to bottom, #FFF 0%,#F4F4F4 100%);
   position: relative;
   min-height: 90px;
+  cursor: pointer;
+  transition: all 0.4s ease-out;
 }
 
-.story:nth-last-child(-n+1) {
-  border-bottom: 0;
+.story:after {
+  display: block;
+  content: '';
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  border-bottom: 1px solid #dedede;
+}
+
+.story:nth-last-child(-n+1):after {
+  display: none;
 }
 
 .story__title {
@@ -118,17 +134,29 @@ main {
   top: 16px;
   text-align: center;
   line-height: 40px;
+
+  box-shadow:
+      0px 2px 5px 0px rgba(0, 0, 0, 0.06),
+      0px 2px 5px 0px rgba(0, 0, 0, 0.08),
+      0px 2px 7px 0px rgba(0, 0, 0, 0.10);
 }
 
 .story-details {
-  will-change: transform;
-  transform: translateZ(0);
+  opacity: 0;
   position: fixed;
-  top: 86px;
+  top: 0;
   left: 100%;
   width: 100%;
-  bottom: 40px;
+  bottom: 0;
   background: white;
+  z-index: 2;
+  padding: 16px;
+  box-shadow:
+      0px 2px 5px 0px rgba(0, 0, 0, 0.06),
+      0px 2px 5px 0px rgba(0, 0, 0, 0.08),
+      0px 2px 7px 0px rgba(0, 0, 0, 0.10);
+
+  transition: opacity 0.3s ease-out;
 }
 
 footer {

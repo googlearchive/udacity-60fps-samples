@@ -1,18 +1,18 @@
 // TODO finish styling
-// TODO add paint storm
-// TODO add layout thrashing (parallax?)
-// TODO add blocking touchdown / touchmove (maybe refactor scroll)
-// TODO add long-running JS
-// TODO add more badly-timed JS (lazy load and injection of results)
 // TODO add big style recalc
 
 APP.Main = (function() {
 
+  var LAZY_LOAD_THRESHOLD = 300;
   var stories = null;
   var storyStart = 0;
   var count = 100;
   var $ = document.querySelector.bind(document);
   var main = $('main');
+  var inDetails = false;
+  var storyLoadCount = 0;
+
+  HandlebarsIntl.registerWith(Handlebars);
 
   var storyTemplate =
       Handlebars.compile($('#tmpl-story').textContent);
@@ -22,13 +22,34 @@ APP.Main = (function() {
   /**
    * As every single story arrives in shove its
    * content in at that exact moment. Feels like something
-   * that should really be in a requestAnimationFrame.
+   * that should really be handled more delicately, and
+   * probably in a requestAnimationFrame callback.
    */
   function onStoryData (key, details) {
-    var story = document.querySelector('#s-' + key);
-    var html = storyTemplate(details);
-    story.innerHTML = html;
-    story.addEventListener('click', onStoryClick.bind(this, details));
+
+    // This seems odd. Surely we could just select the story
+    // directly rather than looping through all of them.
+    var storyElements = document.querySelectorAll('.story');
+
+    for (var i = 0; i < storyElements.length; i++) {
+
+      if (storyElements[i].getAttribute('id') === 's-' + key) {
+
+        details.time *= 1000;
+        var story = storyElements[i];
+        var html = storyTemplate(details);
+        story.innerHTML = html;
+        story.addEventListener('click', onStoryClick.bind(this, details));
+        story.classList.add('clickable');
+
+        // Tick down. When zero we can batch in the next load.
+        storyLoadCount--;
+
+      }
+    }
+
+    if (storyLoadCount === 0)
+      colorizeAndScaleStories();
   }
 
   function onStoryClick(details) {
@@ -60,8 +81,16 @@ APP.Main = (function() {
 
   function showStory(id) {
 
+    if (inDetails)
+      return;
+
+    inDetails = true;
+
     var storyDetails = $('#sd-' + id);
     var left = null;
+
+    document.body.classList.add('details-active');
+    storyDetails.style.opacity = 1;
 
     function animate () {
 
@@ -73,7 +102,7 @@ APP.Main = (function() {
         left = storyDetailsPosition.left;
 
       // Now figure out where it needs to go.
-      left += (0 - storyDetailsPosition.left) * 0.1;
+      left += (0 - storyDetailsPosition.left) * 0.08;
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left) > 0.5)
@@ -95,22 +124,32 @@ APP.Main = (function() {
 
   function hideStory(id) {
 
+    if (!inDetails)
+      return;
+
     var storyDetails = $('#sd-' + id);
     var left = 0;
 
+    document.body.classList.remove('details-active');
+    storyDetails.style.opacity = 0;
+
     function animate () {
+
       // Find out where it currently is.
       var mainPosition = main.getBoundingClientRect();
       var storyDetailsPosition = storyDetails.getBoundingClientRect();
+      var target = mainPosition.width + 100;
 
       // Now figure out where it needs to go.
-      left += (mainPosition.width - storyDetailsPosition.left) * 0.1;
+      left += (target - storyDetailsPosition.left) * 0.08;
 
       // Set up the next bit of the animation if there is more to do.
-      if (Math.abs(left) > 0.5)
+      if (Math.abs(left - target) > 0.5) {
         setTimeout(animate, 4);
-      else
-        left = 0;
+      } else {
+        left = target;
+        inDetails = false;
+      }
 
       // And update the styles. Wait, is this a read-write cycle?
       // I hope I don't trigger a forced synchronous layout!
@@ -124,11 +163,56 @@ APP.Main = (function() {
     setTimeout(animate, 4);
   }
 
+  function colorizeAndScaleStories() {
+
+    var storyElements = document.querySelectorAll('.story');
+
+    // It does seem awfully broad to change all the
+    // colors every time!
+    for (var s = 0; s < storyElements.length; s++) {
+
+      var story = storyElements[s];
+      var score = story.querySelector('.story__score');
+      var title = story.querySelector('.story__title');
+
+      // Base the scale on the y position of the score.
+      var height = main.offsetHeight;
+      var mainPosition = main.getBoundingClientRect();
+      var scoreLocation = score.getBoundingClientRect().top -
+          document.body.getBoundingClientRect().top;
+      var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
+      var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
+
+      score.style.width = (scale * 40) + 'px';
+      score.style.height = (scale * 40) + 'px';
+      score.style.lineHeight = (scale * 40) + 'px';
+
+      // Now figure out how wide it is and use that to saturate it.
+      scoreLocation = score.getBoundingClientRect();
+      var saturation = (100 * ((scoreLocation.width - 38) / 2));
+
+      score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
+      title.style.opacity = opacity;
+    }
+  }
+
+  main.addEventListener('touchstart', function(evt) {
+
+    // I just wanted to test what happens if touchstart
+    // gets canceled. Hope it doesn't block scrolling on mobiles...
+    if (Math.random() > 0.97) {
+      evt.preventDefault();
+    }
+
+  });
+
   main.addEventListener('scroll', function() {
 
     var header = $('header');
     var headerTitles = header.querySelector('.header__title-wrapper');
     var scrollTopCapped = Math.min(70, main.scrollTop);
+
+    colorizeAndScaleStories();
 
     header.style.height = (156 - scrollTopCapped) + 'px';
     headerTitles.style.transform = 'scale(' +
@@ -136,21 +220,28 @@ APP.Main = (function() {
 
     // Add a shadow...
     if (main.scrollTop > 70)
-      header.classList.add('raised');
+      document.body.classList.add('raised');
     else
-      header.classList.remove('raised');
+      document.body.classList.remove('raised');
 
-    // Add a 'subtle' parallax effect here...
-
+    // Check if we need to load the next batch of stories...
+    var loadThreshold = (main.scrollHeight - main.offsetHeight -
+        LAZY_LOAD_THRESHOLD);
+    if (main.scrollTop > loadThreshold)
+      loadStoryBatch();
   });
 
-  // Bootstrap in the stories.
-  APP.Data.getTopStories(function(data) {
+  function loadStoryBatch() {
 
-    stories = data;
+    if (storyLoadCount > 0)
+      return;
 
-    for (var i = storyStart; i < count; i++) {
-      if (!stories[i])
+    storyLoadCount = count;
+
+    var end = storyStart + count;
+    for (var i = storyStart; i < end; i++) {
+
+      if (i >= stories.length)
         return;
 
       var key = String(stories[i]);
@@ -160,13 +251,22 @@ APP.Main = (function() {
       story.innerHTML = storyTemplate({
         title: '...',
         score: '-',
-        by: '...'
+        by: '...',
+        time: 0
       });
       main.appendChild(story);
 
       APP.Data.getStoryById(stories[i], onStoryData.bind(this, key));
     }
 
+    storyStart += count;
+
+  }
+
+  // Bootstrap in the stories.
+  APP.Data.getTopStories(function(data) {
+    stories = data;
+    loadStoryBatch();
   });
 
 })();

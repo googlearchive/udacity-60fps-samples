@@ -8,10 +8,13 @@
   <meta name="theme-color" content="#FF6F00">
 
   <script src="libs/handlebars-v3.0.0.js"></script>
+  <script src="libs/handlebars-intl.min.js"></script>
+
   <script id="tmpl-story" type="text/x-handlebars-template">
     <h1 class="story__title">{{ title }}</h1>
     <div class="story__score">{{ score }}</div>
-    <div class="story__by">Posted by {{ by }}</div>
+    <div class="story__by">Posted by {{ by }}{{#if time }}, {{ formatRelative time }}{{/if }}
+    </div>
   </script>
 
   <script id="tmpl-story-details" type="text/x-handlebars-template">
