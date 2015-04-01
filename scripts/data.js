@@ -19,6 +19,15 @@ APP.Data = (function() {
     });
   }
 
+  function getStoryComment(id, callback) {
+
+    var storyCommentURL = HN_STORYDETAILS_URL.replace(/\[ID\]/, id);
+
+    request(storyCommentURL, function(evt) {
+      callback(evt.target.response);
+    });
+  }
+
   function request(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -29,7 +38,8 @@ APP.Data = (function() {
 
   return {
     getTopStories: getTopStories,
-    getStoryById: getStoryById
+    getStoryById: getStoryById,
+    getStoryComment: getStoryComment
   };
 
 })();

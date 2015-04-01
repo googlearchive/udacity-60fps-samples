@@ -1,13 +1,11 @@
-// TODO finish styling
-// TODO add big style recalc
-
 APP.Main = (function() {
 
   var LAZY_LOAD_THRESHOLD = 300;
+  var $ = document.querySelector.bind(document);
+
   var stories = null;
   var storyStart = 0;
   var count = 100;
-  var $ = document.querySelector.bind(document);
   var main = $('main');
   var inDetails = false;
   var storyLoadCount = 0;
@@ -18,6 +16,8 @@ APP.Main = (function() {
       Handlebars.compile($('#tmpl-story').textContent);
   var storyDetailsTemplate =
       Handlebars.compile($('#tmpl-story-details').textContent);
+  var storyDetailsCommentTemplate =
+      Handlebars.compile($('#tmpl-story-details-comment').textContent);
 
   /**
    * As every single story arrives in shove its
@@ -48,6 +48,7 @@ APP.Main = (function() {
       }
     }
 
+    // Colorize on complete.
     if (storyLoadCount === 0)
       colorizeAndScaleStories();
   }
@@ -63,16 +64,52 @@ APP.Main = (function() {
     // it inflates the DOM and I can only see one at once.
     if (!storyDetails) {
 
+      details.urlobj = new URL(details.url);
+
+      var comment;
+      var commentsElement;
+      var storyHeader;
+      var storyContent;
+
       var html = storyDetailsTemplate(details);
+      var kids = details.kids;
+      var commentHtml = storyDetailsCommentTemplate({
+        by: '', text: ''
+      });
+
       storyDetails = document.createElement('section');
       storyDetails.setAttribute('id', 'sd-' + details.id);
       storyDetails.classList.add('story-details');
       storyDetails.innerHTML = html;
 
+      commentsElement = storyDetails.querySelector('.js-comments');
+      storyHeader = storyDetails.querySelector('.js-header');
+      storyContent = storyDetails.querySelector('.js-content');
+
+      for (var k = 0; k < kids.length; k++) {
+
+        comment = document.createElement('aside');
+        comment.setAttribute('id', 'sdc-' + kids[k]);
+        comment.classList.add('story-details__comment');
+        comment.innerHTML = commentHtml;
+        commentsElement.appendChild(comment);
+
+        // Update the comment with the live data.
+        APP.Data.getStoryComment(kids[k], function(commentDetails) {
+
+          commentDetails.time *= 1000;
+
+          var comment = commentsElement.querySelector('#sdc-' + commentDetails.id);
+          comment.innerHTML = storyDetailsCommentTemplate(commentDetails);
+        });
+      }
+
       var closeButton = storyDetails.querySelector('.js-close');
       closeButton.addEventListener('click', hideStory.bind(this, details.id));
 
       document.body.appendChild(storyDetails);
+      var headerHeight = storyHeader.getBoundingClientRect().height;
+      storyContent.style.paddingTop = headerHeight + 'px';
     }
 
     // Wait a little time then show the story details.
@@ -102,7 +139,7 @@ APP.Main = (function() {
         left = storyDetailsPosition.left;
 
       // Now figure out where it needs to go.
-      left += (0 - storyDetailsPosition.left) * 0.08;
+      left += (0 - storyDetailsPosition.left) * 0.1;
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left) > 0.5)
@@ -141,7 +178,7 @@ APP.Main = (function() {
       var target = mainPosition.width + 100;
 
       // Now figure out where it needs to go.
-      left += (target - storyDetailsPosition.left) * 0.08;
+      left += (target - storyDetailsPosition.left) * 0.1;
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left - target) > 0.5) {
@@ -163,6 +200,10 @@ APP.Main = (function() {
     setTimeout(animate, 4);
   }
 
+  /**
+   * Does this really add anything? Can we do this kind
+   * of work in a cheaper way?
+   */
   function colorizeAndScaleStories() {
 
     var storyElements = document.querySelectorAll('.story');
@@ -218,13 +259,13 @@ APP.Main = (function() {
     headerTitles.style.transform = 'scale(' +
       (1 - (scrollTopCapped / 300)) + ')';
 
-    // Add a shadow...
+    // Add a shadow to the header.
     if (main.scrollTop > 70)
       document.body.classList.add('raised');
     else
       document.body.classList.remove('raised');
 
-    // Check if we need to load the next batch of stories...
+    // Check if we need to load the next batch of stories.
     var loadThreshold = (main.scrollHeight - main.offsetHeight -
         LAZY_LOAD_THRESHOLD);
     if (main.scrollTop > loadThreshold)

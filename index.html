@@ -18,9 +18,30 @@
   </script>
 
   <script id="tmpl-story-details" type="text/x-handlebars-template">
-    <button class="js-close">Close</button>
-    <h1>{{ title }}</h1>
-    <div>{{ by }}</div> (score: {{ score }})
+    <header class="story-details__header js-header">
+      <h1 class="story-details__title">{{ title }}{{#if url }} <a class="story-details__title-link" href="{{url}}">({{ urlobj.hostname }})</a>{{/if}}</h1>
+      <button class="story-details__close js-close">Close</button>
+      <section class="story-details__meta">
+        Posted by {{ by }}{{#if time }}, {{ formatRelative time }}{{/if }}
+      </section>
+    </header>
+
+    <section class="story-details__content js-content">
+      <div>
+        <a class="story-details__link" href="{{ url }}">Visit site</a>
+      </div>
+
+      {{#if kids}}
+      <section class="story-details__comments js-comments">
+        <h2 class="story-details__comments-title">Comments</h2>
+      </section>
+      {{/if}}
+    </section>
+  </script>
+
+  <script id="tmpl-story-details-comment" type="text/x-handlebars-template">
+    <p class="story-details-comment__author">{{ by }}{{#if time }}, {{ formatRelative time }}{{/if }}</p>
+    <div class="story-details-comment__text">{{{ text }}}</div>
   </script>
 
   <link href='http://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
