@@ -17,12 +17,24 @@ html {
 }
 
 body {
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-flex-wrap: nowrap;
+      -ms-flex-wrap: nowrap;
+          flex-wrap: nowrap;
+  -webkit-justify-content: flex-start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-align-items: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  -ms-flex-line-pack: stretch;
+      -webkit-align-content: stretch;
+          align-content: stretch;
   background: #ececec;
 }
 
@@ -45,7 +57,8 @@ a {
 .header__title-wrapper {
   position: absolute;
   bottom: 16px;
-  transform-origin: 0 100%;
+  -webkit-transform-origin: 0 100%;
+          transform-origin: 0 100%;
 }
 
 .header__title {
@@ -81,10 +94,37 @@ body.raised .header {
 
 main {
   padding-top: 156px;
-  flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   z-index: 0;
+}
+
+main.loading {
+  background: url(../images/loader.png) center center no-repeat;
+  background-size: 24px 24px;
+
+  -webkit-animation-name: spin;
+          animation-name: spin;
+  -webkit-animation-duration: 500ms;
+          animation-duration: 500ms;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+}
+
+@-webkit-keyframes spin {
+  from { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  from { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
 }
 
 .story {
@@ -149,12 +189,24 @@ main {
 }
 
 .story-details {
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-flex-wrap: nowrap;
+      -ms-flex-wrap: nowrap;
+          flex-wrap: nowrap;
+  -webkit-justify-content: flex-start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-align-items: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  -ms-flex-line-pack: stretch;
+      -webkit-align-content: stretch;
+          align-content: stretch;
 
   opacity: 0;
   position: fixed;
@@ -174,9 +226,13 @@ main {
 }
 
 .story-details__content {
-  flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
+
+  -webkit-overflow-scrolling: touch;
 
   padding: 0 16px 72px 72px;
 }
