@@ -86,6 +86,16 @@ APP.Main = (function() {
       storyHeader = storyDetails.querySelector('.js-header');
       storyContent = storyDetails.querySelector('.js-content');
 
+      var closeButton = storyDetails.querySelector('.js-close');
+      closeButton.addEventListener('click', hideStory.bind(this, details.id));
+
+      document.body.appendChild(storyDetails);
+      var headerHeight = storyHeader.getBoundingClientRect().height;
+      storyContent.style.paddingTop = headerHeight + 'px';
+
+      if (typeof kids === 'undefined')
+        return;
+
       for (var k = 0; k < kids.length; k++) {
 
         comment = document.createElement('aside');
@@ -103,13 +113,6 @@ APP.Main = (function() {
           comment.innerHTML = storyDetailsCommentTemplate(commentDetails);
         });
       }
-
-      var closeButton = storyDetails.querySelector('.js-close');
-      closeButton.addEventListener('click', hideStory.bind(this, details.id));
-
-      document.body.appendChild(storyDetails);
-      var headerHeight = storyHeader.getBoundingClientRect().height;
-      storyContent.style.paddingTop = headerHeight + 'px';
     }
 
     // Wait a little time then show the story details.
