@@ -57,6 +57,9 @@ APP.Main = (function() {
 
     var storyDetails = $('sd-' + details.id);
 
+    // Wait a little time then show the story details.
+    setTimeout(showStory.bind(this, details.id), 30);
+
     // Create and append the story. A visual change...
     // perhaps that should be in a requestAnimationFrame?
     // And maybe, since they're all the same, I don't
@@ -115,8 +118,6 @@ APP.Main = (function() {
       }
     }
 
-    // Wait a little time then show the story details.
-    setTimeout(showStory.bind(this, details.id), 30);
   }
 
   function showStory(id) {
