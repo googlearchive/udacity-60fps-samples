@@ -241,6 +241,11 @@ main.loading {
   transition: opacity 0.3s ease-out;
 }
 
+.story-details * {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
 .story-details__content {
   -webkit-flex: 1;
       -ms-flex: 1;
@@ -278,6 +283,7 @@ main.loading {
   left: 0;
   top: 0;
   width: 100%;
+  z-index: 1;
 }
 
 .story-details__close {
